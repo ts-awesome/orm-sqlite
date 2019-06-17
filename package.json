@@ -1,7 +1,7 @@
 {
-  "name": "@viatsyshyn/ts-orm-pg",
-  "version": "0.1.2",
-  "description": "TypeScript ORM Postgres Driver",
+  "name": "@viatsyshyn/ts-orm-sqlite",
+  "version": "0.0.0",
+  "description": "TypeScript ORM SQLite Driver",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

@@ -175,7 +175,7 @@ function InsertCompiler({_values, _table}: IBuildableInsertQuery): ISqlQuery {
   const fields = keys.map(field => sqliteBuilder.escapeColumn(field));
   const values = keys.map(field => sqlCompiler.compileExp(_values[field]));
 
-  let sql = `INSERT INTO ${sqliteBuilder.escapeTable(_table.tableName)} (${fields.join(', ')}) VALUES (${values.join(', ')})`;
+  let sql = `INSERT INTO ${sqliteBuilder.escapeTable(_table.tableName)} (${fields.join(', ')}) VALUES (${values.join(', ')});`;
 
   const params = sqlCompiler.collectParams();
 
@@ -208,7 +208,7 @@ function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery):
         _operands: _conflictExp._where
       })}`
     }
-    sql += ` DO UPDATE SET ${updateValues.join(', ')}`;
+    sql += ` DO UPDATE SET ${updateValues.join(', ')};`;
   }
   // sql += ` RETURNING *;`
   
@@ -239,7 +239,7 @@ function UpdateCompiler({_values, _where, _table, _limit}: IBuildableUpdateQuery
   if (_limit) {
     sql += ' LIMIT ' + sqlCompiler.compileExp(_limit)
   }
-  // sql += ` RETURNING *;`;
+  sql += `;`;
 
   const params = sqlCompiler.collectParams();
 
@@ -264,7 +264,7 @@ function DeleteCompiler({_where, _table, _limit}: IBuildableDeleteQuery): ISqlQu
   if (_limit) {
     sql += ' LIMIT ' + sqlCompiler.compileExp(_limit)
   }
-  // sql += ` RETURNING *;`;
+  sql += ` ;`;
 
   const params = sqlCompiler.collectParams();
 
