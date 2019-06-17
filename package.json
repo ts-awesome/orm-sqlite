@@ -1,0 +1,29 @@
+{
+  "name": "@viatsyshyn/ts-orm-pg",
+  "version": "0.1.2",
+  "description": "TypeScript ORM Postgres Driver",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && cp src/*.d.ts dist/src/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/inversify": "^2.0.33",
+    "@types/sqlite3": "^3.1.5",
+    "@types/yesql": "^3.2.1",
+    "@viatsyshyn/ts-orm": "~0.1.9",
+    "inversify": "^5.0.0",
+    "sqlite": "^3.0.3",
+    "typescript": "^3.3.3",
+    "yesql": "^3.2.2"
+  },
+  "peerDependencies": {
+    "@viatsyshyn/ts-orm": "~0.1.9",
+    "inversify": "^5.0.0",
+    "sqlite": "^3.0.3"
+  },
+  "author": "Volodymyr Iatsyshyn <viatsyshyn@gmail.com>",
+  "license": "ISC"
+}
