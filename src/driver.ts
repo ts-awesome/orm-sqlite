@@ -9,14 +9,14 @@ import { ISqlQuery } from './interfaces';
 
 @injectable()
 export class SQLiteDriver extends SQLiteExecutor
-  implements ISqlDataDriver<ISqlQuery> {
+  implements ISqlDataDriver<ISqlQuery[]> {
   constructor(
     private readonly db: Database
   ) {
     super(db);
   }
 
-  public async begin(): Promise<ISqlTransaction<ISqlQuery>> {
+  public async begin(): Promise<ISqlTransaction<ISqlQuery[]>> {
     return new Promise((resolve, reject) => {
       this.db.run('BEGIN TRANSACTION', err => {
         if (err) {

@@ -16,8 +16,7 @@
     "@viatsyshyn/ts-orm": "~0.1.9",
     "inversify": "^5.0.0",
     "sqlite": "^3.0.3",
-    "typescript": "^3.3.3",
-    "yesql": "^3.2.2"
+    "typescript": "^3.3.3"
   },
   "peerDependencies": {
     "@viatsyshyn/ts-orm": "~0.1.9",

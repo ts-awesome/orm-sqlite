@@ -84,7 +84,7 @@ const sqlCompiler = {
     if (!this._paramMap.has(expr)) {
       this._paramMap.set(expr, this._paramCount++);
     }
-    return `:${sqliteBuilder.getParam(this._paramMap.get(expr))}`;
+    return `$${sqliteBuilder.getParam(this._paramMap.get(expr))}`;
   },
 
   processColumns(columns?: (IExpr|string)[]) {
@@ -107,7 +107,7 @@ const sqlCompiler = {
   collectParams(): {[key: string]: DbValueType} {
     const params: {[key: string]: DbValueType} = {};
     sqlCompiler._paramMap.forEach((value, key) => {
-      params[sqliteBuilder.getParam(value)] = key;
+      params[`$${sqliteBuilder.getParam(value)}`] = key;
     });
     return params;
   }
@@ -140,7 +140,7 @@ function SubSelectBuilder({_columns, _table, _where, _groupBy, _having, _joins}:
   return sql;
 }
 
-function SelectCompiler(query: IBuildableSelectQuery): ISqlQuery {
+function SelectCompiler(query: IBuildableSelectQuery): ISqlQuery[] {
   sqlCompiler.resetParams();
 
   let sql = SubSelectBuilder(query);
@@ -160,32 +160,38 @@ function SelectCompiler(query: IBuildableSelectQuery): ISqlQuery {
 
   const params = sqlCompiler.collectParams();
 
-  return {
+  return [{
     sql,
     params
-  };
+  }];
 }
 
 //TODO Think how to implement returning affected rows 
 
-function InsertCompiler({_values, _table}: IBuildableInsertQuery): ISqlQuery {
+function InsertCompiler({_values, _table}: IBuildableInsertQuery): ISqlQuery[] {
   sqlCompiler.resetParams();
 
   const keys = Object.keys(_values).filter(k => _values[k] !== undefined);
   const fields = keys.map(field => sqliteBuilder.escapeColumn(field));
   const values = keys.map(field => sqlCompiler.compileExp(_values[field]));
 
-  let sql = `INSERT INTO ${sqliteBuilder.escapeTable(_table.tableName)} (${fields.join(', ')}) VALUES (${values.join(', ')});`;
-
+  const sql = `INSERT INTO ${sqliteBuilder.escapeTable(_table.tableName)} (${fields.join(', ')}) VALUES (${values.join(', ')});`;
   const params = sqlCompiler.collectParams();
+  const queries = [{sql, params}]
 
-  return {
-    sql,
-    params
-  };
+  if (_table.primaryKey) {
+    queries.push({
+      sql: `
+        SELECT * FROM ${sqliteBuilder.escapeTable(_table.tableName)}
+        WHERE ${sqliteBuilder.escapeColumn(_table.primaryKey)} = last_insert_rowid();`,
+      params: {}
+    });
+  }
+
+  return queries;
 }
 
-function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery): ISqlQuery {
+function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery): ISqlQuery[] {
   sqlCompiler.resetParams()
   
   const keys = Object.keys(_values).filter(k => _values[k] !== undefined);
@@ -213,13 +219,13 @@ function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery):
   // sql += ` RETURNING *;`
   
   const params = sqlCompiler.collectParams();
-  return {
+  return [{
     sql,
     params
-  };
+  }];
 }
 
-function UpdateCompiler({_values, _where, _table, _limit}: IBuildableUpdateQuery): ISqlQuery {
+function UpdateCompiler({_values, _where, _table, _limit}: IBuildableUpdateQuery): ISqlQuery[] {
   sqlCompiler.resetParams();
 
   const values = Object
@@ -243,13 +249,13 @@ function UpdateCompiler({_values, _where, _table, _limit}: IBuildableUpdateQuery
 
   const params = sqlCompiler.collectParams();
 
-  return {
+  return [{
     sql,
     params
-  };
+  }];
 }
 
-function DeleteCompiler({_where, _table, _limit}: IBuildableDeleteQuery): ISqlQuery {
+function DeleteCompiler({_where, _table, _limit}: IBuildableDeleteQuery): ISqlQuery[] {
   sqlCompiler.resetParams();
 
   let sql = `DELETE FROM ${sqliteBuilder.escapeTable(_table.tableName)}`;
@@ -268,15 +274,15 @@ function DeleteCompiler({_where, _table, _limit}: IBuildableDeleteQuery): ISqlQu
 
   const params = sqlCompiler.collectParams();
 
-  return {
+  return [{
     sql,
     params
-  };
+  }];
 }
 
 @injectable()
-export class SQLiteCompiler implements IBuildableQueryCompiler<ISqlQuery> {
-  compile(query: IBuildableQuery): ISqlQuery {
+export class SQLiteCompiler implements IBuildableQueryCompiler<ISqlQuery[]> {
+  compile(query: IBuildableQuery): ISqlQuery[] {
     switch (query._type) {
       case 'SELECT': return SelectCompiler(query);
       case 'INSERT': return InsertCompiler(query);

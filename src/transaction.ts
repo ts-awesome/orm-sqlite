@@ -5,7 +5,7 @@ import {injectable} from 'inversify';
 import {ISqlTransaction} from '@viatsyshyn/ts-orm';
 
 @injectable()
-export class SQLiteTransaction extends SQLiteExecutor implements ISqlTransaction<ISqlQuery> {
+export class SQLiteTransaction extends SQLiteExecutor implements ISqlTransaction<ISqlQuery[]> {
   private conn: Database;
   private isFinished = false;
 

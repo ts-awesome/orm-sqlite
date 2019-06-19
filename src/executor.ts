@@ -1,16 +1,14 @@
-import {Database, RunResult} from 'sqlite3';
-import * as yesql from 'yesql';
-
-import {IQueryData, IQueryExecutor} from "@viatsyshyn/ts-orm";
-import {injectable} from "inversify";
-import {ISqlQuery} from "./interfaces";
+import {Database} from 'sqlite3';
+import {IQueryData, IQueryExecutor} from '@viatsyshyn/ts-orm';
+import {injectable} from 'inversify';
+import {ISqlQuery} from './interfaces';
 import {
   DbError,
   DUPLICATE_VALUE_DB_ERROR_CODE,
   DuplicateValueDbError,
   FK_VIOLATES_DB_ERROR_CODE,
   FkViolatedDbError
-} from "./errors";
+} from './errors';
 
 // //Add TIME_STAMPT parser
 // const TIME_STAMPT_CODE = 1114;
@@ -19,49 +17,44 @@ import {
 // });
 
 @injectable()
-export class SQLiteExecutor implements IQueryExecutor<ISqlQuery> {
+export class SQLiteExecutor implements IQueryExecutor<ISqlQuery[]> {
 
   constructor(private executor: Database) {}
 
 
-  public async execute<TResult>(sqlQuery: ISqlQuery): Promise<IQueryData[]> {
-    if (!sqlQuery || !sqlQuery.sql || sqlQuery.sql.trim() === "") {
-      return Promise.reject(new Error("sqlQuery is not provided"));
-    }
-    if (!sqlQuery.params) {
-      sqlQuery.params = {};
-    }
+  public async execute<TResult>(sqlQueries: ISqlQuery[]): Promise<IQueryData[]> {
 
+    if (!sqlQueries || sqlQueries.length === 0) {
+      return Promise.reject(new Error('sqlQueries is empty'));
+    }
+    let result: any[] = []
+    for (let i = 0; i < sqlQueries.length; i++) {
+      if (!sqlQueries[i] || !sqlQueries[i].sql || sqlQueries[i].sql.trim() === '') {
+        return Promise.reject(new Error(`sqlQuery ${i} is not provided`));
+      }
+      if (!sqlQueries[i].params) {
+        sqlQueries[i].params = {};
+      }
+      try {
+        result = await this.promisefiedAll(sqlQueries[i].sql, sqlQueries[i].params);
+      } catch (err) {
+        throw new DbError(err.code, undefined, err);
+      }
+    }
+    return result
+  }
+
+  private promisefiedAll(sql: string, params: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.executor.run(sqlQuery.sql, sqlQuery.params, function (err: Error) {
-        if (err) {
-          reject(err);
-        } else {
-          const result: IQueryData[] = [];
-          this.each((err, row) => {
-            if (err) {
-              reject(err);
-            } else {
-              result.push(row);
-            }
-          }, (err, count) =>{
-            if (err) {
-              reject(err);
-            } else {
-              console.log('Query complete. Read count', count);
-              resolve(result);
-            }
-          });
-        }
-      });
+      this.executor.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
     });
   }
 
 
   // public async execute<TResult>(sqlQuery: ISqlQuery): Promise<IQueryData[]> {
 
-  //   // if (!sqlQuery || !sqlQuery.sql || sqlQuery.sql.trim() === "") {
-  //   //   return Promise.reject(new Error("sqlQuery is not provided"));
+  //   // if (!sqlQuery || !sqlQuery.sql || sqlQuery.sql.trim() === '') {
+  //   //   return Promise.reject(new Error('sqlQuery is not provided'));
   //   // }
 
   //   // if (!sqlQuery.params) {
