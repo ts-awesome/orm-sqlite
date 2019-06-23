@@ -10,11 +10,6 @@ import {
   FkViolatedDbError
 } from './errors';
 
-// //Add TIME_STAMPT parser
-// const TIME_STAMPT_CODE = 1114;
-// (<any>types).setTypeParser(TIME_STAMPT_CODE, (val: string) => {
-//   return new Date(val.replace(' ', 'T') + 'Z');
-// });
 
 @injectable()
 export class SQLiteExecutor implements IQueryExecutor<ISqlQuery[]> {

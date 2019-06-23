@@ -249,6 +249,10 @@ function UpdateCompiler({_values, _where, _table, _limit}: IBuildableUpdateQuery
 
   const params = sqlCompiler.collectParams();
 
+  console.log('Update sql');
+  console.log(sql);
+  console.log(params)
+
   return [{
     sql,
     params
