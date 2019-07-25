@@ -3,10 +3,6 @@ import {injectable} from 'inversify';
 import {ISqlQuery, IDatabase} from './interfaces';
 import {
   DbError,
-  DUPLICATE_VALUE_DB_ERROR_CODE,
-  DuplicateValueDbError,
-  FK_VIOLATES_DB_ERROR_CODE,
-  FkViolatedDbError
 } from './errors';
 
 
@@ -16,7 +12,7 @@ export class SQLiteExecutor implements IQueryExecutor<ISqlQuery[]> {
   constructor(private executor: IDatabase) {}
 
 
-  public async execute<TResult>(sqlQueries: ISqlQuery[]): Promise<IQueryData[]> {
+  public async execute(sqlQueries: ISqlQuery[]): Promise<IQueryData[]> {
 
     if (!sqlQueries || sqlQueries.length === 0) {
       return Promise.reject(new Error('sqlQueries is empty'));
@@ -43,34 +39,4 @@ export class SQLiteExecutor implements IQueryExecutor<ISqlQuery[]> {
       this.executor.all(sql, params, (err: Error, rows: any) => err ? reject(err) : resolve(rows));
     });
   }
-
-
-  // public async execute<TResult>(sqlQuery: ISqlQuery): Promise<IQueryData[]> {
-
-  //   // if (!sqlQuery || !sqlQuery.sql || sqlQuery.sql.trim() === '') {
-  //   //   return Promise.reject(new Error('sqlQuery is not provided'));
-  //   // }
-
-  //   // if (!sqlQuery.params) {
-  //   //   sqlQuery.params = {};
-  //   // }
-
-  //   // let fixedSql = yesql.pg(sqlQuery.sql)(sqlQuery.params);
-
-
-    
-  //   // try {
-  //   //   let res = await this.db.run
-  //   //   return res.rows;
-  //   // } catch (err) {
-  //   //   switch (err.code) {
-  //   //     case DUPLICATE_VALUE_DB_ERROR_CODE:
-  //   //       throw new DuplicateValueDbError(err);
-  //   //     case FK_VIOLATES_DB_ERROR_CODE:
-  //   //       throw new FkViolatedDbError(err.detail, err.error);
-  //   //     default:
-  //   //       throw new DbError(err.code, undefined, err.detail, err.error);
-  //   //   }
-  //   // }
-  // }
 }
