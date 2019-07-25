@@ -1,17 +1,16 @@
-import { Database } from 'sqlite3';
 
 import { ISqlDataDriver, ISqlTransaction } from '@viatsyshyn/ts-orm';
 import { SQLiteExecutor } from './executor';
 import { SQLiteTransaction } from './transaction';
 import { injectable } from 'inversify';
-import { ISqlQuery } from './interfaces';
+import { ISqlQuery, IDatabase } from './interfaces';
 
 
 @injectable()
 export class SQLiteDriver extends SQLiteExecutor
   implements ISqlDataDriver<ISqlQuery[]> {
   constructor(
-    private readonly db: Database
+    private readonly db: IDatabase
   ) {
     super(db);
   }

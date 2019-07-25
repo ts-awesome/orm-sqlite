@@ -1,17 +1,14 @@
-import { Database } from 'sqlite3';
 import {SQLiteExecutor} from './executor';
-import {ISqlQuery} from './interfaces';
+import {ISqlQuery, IDatabase} from './interfaces';
 import {injectable} from 'inversify';
 import {ISqlTransaction} from '@viatsyshyn/ts-orm';
 
 @injectable()
 export class SQLiteTransaction extends SQLiteExecutor implements ISqlTransaction<ISqlQuery[]> {
-  private conn: Database;
   private isFinished = false;
 
-  constructor(conn: Database) {
+  constructor(private conn: IDatabase) {
     super(conn);
-    this.conn = conn;
   }
 
   public get finished(): boolean {

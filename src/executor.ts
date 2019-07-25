@@ -1,7 +1,6 @@
-import {Database} from 'sqlite3';
 import {IQueryData, IQueryExecutor} from '@viatsyshyn/ts-orm';
 import {injectable} from 'inversify';
-import {ISqlQuery} from './interfaces';
+import {ISqlQuery, IDatabase} from './interfaces';
 import {
   DbError,
   DUPLICATE_VALUE_DB_ERROR_CODE,
@@ -14,7 +13,7 @@ import {
 @injectable()
 export class SQLiteExecutor implements IQueryExecutor<ISqlQuery[]> {
 
-  constructor(private executor: Database) {}
+  constructor(private executor: IDatabase) {}
 
 
   public async execute<TResult>(sqlQueries: ISqlQuery[]): Promise<IQueryData[]> {
@@ -41,7 +40,7 @@ export class SQLiteExecutor implements IQueryExecutor<ISqlQuery[]> {
 
   private promisefiedAll(sql: string, params: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.executor.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
+      this.executor.all(sql, params, (err: Error, rows: any) => err ? reject(err) : resolve(rows));
     });
   }
 
