@@ -84,7 +84,7 @@ const sqlCompiler = {
     if (!this._paramMap.has(expr)) {
       this._paramMap.set(expr, this._paramCount++);
     }
-    return `$${sqliteBuilder.getParam(this._paramMap.get(expr))}`;
+    return `$${sqliteBuilder.getParam(this._paramMap.get(expr)!)}`;
   },
 
   processColumns(columns?: (IExpr|string)[]) {
@@ -166,7 +166,7 @@ function SelectCompiler(query: IBuildableSelectQuery): ISqlQuery[] {
   }];
 }
 
-//TODO Think how to implement returning affected rows 
+//TODO Think how to implement returning affected rows
 
 function InsertCompiler({_values, _table}: IBuildableInsertQuery): ISqlQuery[] {
   sqlCompiler.resetParams();
@@ -193,7 +193,7 @@ function InsertCompiler({_values, _table}: IBuildableInsertQuery): ISqlQuery[] {
 
 function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery): ISqlQuery[] {
   sqlCompiler.resetParams()
-  
+
   const keys = Object.keys(_values).filter(k => _values[k] !== undefined);
   const fields = keys.map(field => sqliteBuilder.escapeColumn(field));
   const values = keys.map(field => sqlCompiler.compileExp(_values[field]));
@@ -203,7 +203,7 @@ function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery):
     INSERT INTO ${sqliteBuilder.escapeTable(_table.tableName)} (${fields.join(', ')})
     VALUES (${values.join(', ')})
     ON CONFLICT`;
-  
+
   if(!_conflictExp) {
     sql += ` DO NOTHING`;
   } else {
@@ -217,7 +217,7 @@ function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery):
     sql += ` DO UPDATE SET ${updateValues.join(', ')};`;
   }
   // sql += ` RETURNING *;`
-  
+
   const params = sqlCompiler.collectParams();
   return [{
     sql,

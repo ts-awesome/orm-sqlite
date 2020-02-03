@@ -36,7 +36,8 @@ export class SQLiteExecutor implements IQueryExecutor<ISqlQuery[]> {
 
   private promisefiedAll(sql: string, params: any): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.executor.all(sql, params, (err: Error, rows: any) => err ? reject(err) : resolve(rows));
+      this.executor.all(sql, params,
+        (err: Error | null, rows: any) => err ? reject(err) : resolve(rows));
     });
   }
 }
