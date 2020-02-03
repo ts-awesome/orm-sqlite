@@ -9,7 +9,6 @@ import {
   IBuildableSubSelectQuery,
   DbValueType,
   IExpr,
-  Order
 } from '@viatsyshyn/ts-orm';
 
 import {ISqlQuery} from './interfaces';
@@ -177,7 +176,7 @@ function InsertCompiler({_values, _table}: IBuildableInsertQuery): ISqlQuery[] {
 
   const sql = `INSERT INTO ${sqliteBuilder.escapeTable(_table.tableName)} (${fields.join(', ')}) VALUES (${values.join(', ')});`;
   const params = sqlCompiler.collectParams();
-  const queries = [{sql, params}]
+  const queries = [{sql, params}];
 
   if (_table.primaryKey) {
     queries.push({
@@ -192,7 +191,7 @@ function InsertCompiler({_values, _table}: IBuildableInsertQuery): ISqlQuery[] {
 }
 
 function UpsertCompiler({_values, _table, _conflictExp}: IBuildableUpsertQuery): ISqlQuery[] {
-  sqlCompiler.resetParams()
+  sqlCompiler.resetParams();
 
   const keys = Object.keys(_values).filter(k => _values[k] !== undefined);
   const fields = keys.map(field => sqliteBuilder.escapeColumn(field));
@@ -251,7 +250,7 @@ function UpdateCompiler({_values, _where, _table, _limit}: IBuildableUpdateQuery
 
   console.log('Update sql');
   console.log(sql);
-  console.log(params)
+  console.log(params);
 
   return [{
     sql,
