@@ -80,10 +80,23 @@ const sqlCompiler = {
       }
     }
 
+    let wrapper: any = undefined;
+    if (typeof expr === 'object' && expr.value !== undefined) {
+      wrapper = expr.wrapper;
+      expr = expr.value;
+    } else if (typeof expr === 'object') {
+      throw new Error(`Property "value" is required, got ${JSON.stringify(expr)}`);
+    }
+
+    if (expr === null || expr === undefined) {
+      return 'NULL';
+    }
+
     if (!this._paramMap.has(expr)) {
       this._paramMap.set(expr, this._paramCount++);
     }
-    return `$${sqliteBuilder.getParam(this._paramMap.get(expr)!)}`;
+    const value = `$${sqliteBuilder.getParam(this._paramMap.get(expr)!)}`;
+    return wrapper ? wrapper(value) : value;
   },
 
   processColumns(columns?: (IExpr|string)[]) {

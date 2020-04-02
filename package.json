@@ -12,13 +12,13 @@
   "devDependencies": {
     "@types/inversify": "^2.0.33",
     "@types/sqlite3": "^3.1.5",
-    "@viatsyshyn/ts-orm": "~0.2.4",
+    "@viatsyshyn/ts-orm": "~0.2.6",
     "inversify": "^5.0.0",
     "sqlite3": "^4.1.0",
     "typescript": "^3.7.5"
   },
   "peerDependencies": {
-    "@viatsyshyn/ts-orm": "~0.2.4",
+    "@viatsyshyn/ts-orm": "~0.2.6",
     "inversify": "^5.0.0",
     "sqlite3": "^4.1.0"
   },
