@@ -129,8 +129,8 @@ function SubSelectBuilder({_columns, _table, _where, _groupBy, _having, _joins}:
   let sql = `SELECT ${sqlCompiler.processColumns(_columns)} FROM ${sqliteBuilder.escapeTable(_table.tableName)}`;
 
   if (Array.isArray(_joins) && _joins.length) {
-    sql += ' ' + _joins.map(({_table, _condition, _type = 'INNER'}: any) => {
-      return `${_type} JOIN ${sqliteBuilder.escapeTable(_table)} ON ${sqlCompiler.compileExp(_condition)}`;
+    sql += ' ' + _joins.map(({_table, _condition, _type = 'INNER', _alias = null}: any) => {
+      return `${_type} JOIN ${sqliteBuilder.escapeTable(_table)}${_alias ? ` AS ${sqliteBuilder.escapeTable(_alias)}` : ''} ON ${sqlCompiler.compileExp(_condition)}`;
     }).join (' ');
   }
 
