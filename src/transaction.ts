@@ -1,7 +1,7 @@
 import {SQLiteExecutor} from './executor';
 import {ISqlQuery, IDatabase} from './interfaces';
 import {injectable} from 'inversify';
-import {ITransaction} from '@viatsyshyn/ts-orm';
+import {ITransaction} from '@ts-awesome/orm';
 
 @injectable()
 export class SQLiteTransaction extends SQLiteExecutor implements ITransaction<ISqlQuery[]> {

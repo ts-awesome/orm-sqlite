@@ -1,4 +1,4 @@
-import { IQueryDriver, ITransaction } from '@viatsyshyn/ts-orm';
+import { IQueryDriver, ITransaction } from '@ts-awesome/orm';
 import { SQLiteExecutor } from './executor';
 import { SQLiteTransaction } from './transaction';
 import { injectable } from 'inversify';

@@ -1,4 +1,4 @@
-import {IQueryData, IQueryExecutor} from '@viatsyshyn/ts-orm';
+import {IQueryData, IQueryExecutor} from '@ts-awesome/orm';
 import {injectable} from 'inversify';
 import {ISqlQuery, IDatabase} from './interfaces';
 import {

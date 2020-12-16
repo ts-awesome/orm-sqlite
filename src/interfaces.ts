@@ -1,4 +1,4 @@
-import {DbValueType} from '@viatsyshyn/ts-orm';
+import {DbValueType} from '@ts-awesome/orm';
 import { RunResult, Statement } from 'sqlite3';
 
 export interface ISqlQuery {
